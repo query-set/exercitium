@@ -5,6 +5,7 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 
 def start():
+    # Just a simple change for test the SSH uploading
     options = Options()
     options.headless = True
     driver = webdriver.Firefox(options=options)
