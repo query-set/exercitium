@@ -1,25 +1,37 @@
-from bs4 import BeautifulSoup
+import json
+from typing import Tuple
+
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+
+# Defaults:
+PASS_FILE = "pass.json"
+TRACK = "python"
+EX = "sieve"
+
+# Links storage
+M = "https://exercism.io/"
+LOGIN_URL = M + "users/sign_in"
+TRACK_URL = M + f"my/tracks/{TRACK}"
+EX_URL = M + f"my/solutions?exercise_id={EX}&track_id={TRACK}"
+
+
+def fetch_login_data() -> Tuple[str, str]:
+    with open(PASS_FILE, "r") as f:
+        data = json.loads(f.read())
+        return data["email"], data["password"]
 
 
 def start():
-    # Just a simple change for test the SSH uploading
     options = Options()
     options.headless = True
     driver = webdriver.Firefox(options=options)
-    # driver = webdriver.Remote(
-    #     command_executor="http://127.0.0.1:4444/wd/hub",
-    #     options=options,
-    #     desired_capabilities=DesiredCapabilities.FIREFOX)
-    page = driver.get("https://exercism.io/")
-    print("-----")
-    print(dir(page))
-    print("-----")
-    # soup = BeautifulSoup(open(page), features="lxml")
-    # print(type(soup))
-    driver.quit()
+    e, p = fetch_login_data()
+    driver.get(LOGIN_URL)
+    driver.find_element_by_id("user_email").send_keys(e)
+    driver.find_element_by_id("user_password").send_keys(p)
+    driver.find_element_by_name("button").click()
+    driver.get(TRACK_URL)
 
 
 if __name__ == "__main__":
