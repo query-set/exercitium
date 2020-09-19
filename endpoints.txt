@@ -1,0 +1,7 @@
+Discovered working endpoints:
+
+
+	   https://api.exercism.io/v1/ping/
+
+	   https://api.exercism.io/v1/tracks/haskell/
+	   https://api.exercism.io/v1/tracks/python/

@@ -1,3 +1,6 @@
 venv/
 *.log
 pass.json
+
+.ipynb_checkpoints/
+*.html
