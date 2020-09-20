@@ -1,4 +1,0 @@
-#+TITLE: Simple project's TODO
-
-* Store a passes (safe way)
-*
