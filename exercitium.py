@@ -1,7 +1,7 @@
 import json
-from typing import Tuple
+from typing import Tuple, List
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, element
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 
@@ -18,13 +18,43 @@ EX_URL = M + f"my/solutions?exercise_id={EX}&track_id={TRACK}"
 MOCKED = True
 BS_FEAT = "lxml"
 
-EX_CLS_NAME = "pure-u-1 pure-u-md-1-2 pure-u-lg-1-3"
+EX_DIV_CLS_NAME = "pure-u-1 pure-u-md-1-2 pure-u-lg-1-3"
+
+# list of exercises class=pure-g exercises
+# exercise  pure-u-1 pure-u-md-1-2 pure-u-lg-1-3
+# completed = widged-side-exercise completed
+# unlocked = widged-side-exercise unlocked
+# in-progress = widged-side-exercise in-progress
+
 
 
 def fetch_login_data() -> Tuple[str, str]:
     with open(PASS_FILE, "r") as f:
         data = json.loads(f.read())
         return data["email"], data["password"]
+
+
+class Exercise:
+    def __init__(self, src):
+        """ Storage for singular exercise data retrieved from HTML. """
+        self.src = src
+        self.state, self.link = self._get_link_and_state(src)
+        self.title = src.find("div", {"class": "title"}).text.strip()
+        self.level = src.find("div", {"class": "stats"}).text.strip()
+        self.topics = self._get_topics(src)
+
+    def __str__(self):
+        return self.title
+
+    @staticmethod
+    def _get_link_and_state(src: element.Tag) -> List[str]:
+        marker = src.find("a", {"class": "widget-side-exercise"})
+        return marker.attrs.get("class")[-1], marker.attrs.get("href")
+
+    @staticmethod
+    def _get_topics(src: element.Tag) -> List[str]:
+        return [topic.text.strip() for topic in src.findAll("div", {"class": "topic"})]
+
 
 
 def start():
@@ -44,15 +74,10 @@ def start():
             soup = BeautifulSoup(f.read(), features=BS_FEAT)
 
     exercises = soup.findAll(
-        "div", {"class": EX_CLS_NAME}
+        "div", {"class": EX_DIV_CLS_NAME}
     )
-    print(len(exercises))
-
-    # list of exercises class=pure-g exercises
-    # exercise  pure-u-1 pure-u-md-1-2 pure-u-lg-1-3
-    # completed = widged-side-exercise completed
-    # unlocked = widged-side-exercise unlocked
-    # in-progress = widged-side-exercise in-progress
+    models = [Exercise(e) for e in exercises]
+    print(len(models))
     return 0
 
 
