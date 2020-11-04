@@ -56,7 +56,6 @@ class Exercise:
         return [topic.text.strip() for topic in src.findAll("div", {"class": "topic"})]
 
 
-
 def start():
     if not MOCKED:
         options = Options()
@@ -77,8 +76,7 @@ def start():
         "div", {"class": EX_DIV_CLS_NAME}
     )
     models = [Exercise(e) for e in exercises]
-    print(len(models))
-    return 0
+    return [(e.title, e.level, e.state) for e in models]
 
 
 if __name__ == "__main__":
